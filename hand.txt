@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVEC Student Emergency Relief Fund | Sri Vasavi Engineering College</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%);
+        }
+        @keyframes highlightFeed {
+            0% { transform: scale(0.95); opacity: 0; }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .new-feed-entry {
+            animation: highlightFeed 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Navigation Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showView('homeView')">
+                <div class="bg-blue-900 text-white font-black text-lg px-3 py-1.5 rounded-md tracking-wider flex-shrink-0">SVEC</div>
+                <div class="border-l border-slate-300 pl-3 leading-tight">
+                    <span class="text-sm font-bold tracking-tight text-slate-900 block">Sri Vasavi Engineering College</span>
+                    <span class="text-xs text-blue-600 font-semibold block mt-0.5">Emergency Student Relief Network</span>
+                </div>
+            </div>
+            <nav class="hidden md:flex gap-6 font-medium text-sm text-slate-600">
+                <button onclick="showView('homeView')" class="hover:text-blue-600 transition">Active Relief Cases</button>
+                <a href="#contributor-feed" onclick="showView('homeView')" class="hover:text-blue-600 transition">Contributor Feed</a>
+                <a href="#how-it-works" onclick="showView('homeView')" class="hover:text-blue-600 transition">Verification Process</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button onclick="showView('requestView')" class="bg-red-600 hover:bg-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle"></i> <span class="hidden sm:inline">Request Emergency Help</span><span class="sm:hidden">Request Help</span>
+                </button>
+                
+                <!-- Hamburger Menu Button -->
+                <div class="relative">
+                    <button onclick="toggleMenu()" class="p-2 text-slate-700 hover:text-blue-900 focus:outline-none text-xl rounded-lg hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="adminDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 z-50 overflow-hidden">
+                        <button onclick="openAdminLoginModal()" class="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-900 transition flex items-center gap-2">
+                            <i class="fa-solid fa-user-shield text-blue-600"></i> Administration Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- VIEW 1: LANDING PAGE -->
+    <div id="homeView">
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white py-12 md:py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+                <span class="bg-blue-400/20 text-blue-100 text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full border border-blue-300/30">Official SVEC Student Support Initiative</span>
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mt-4 leading-tight">Supporting Our Vasavi Family in Medical Emergencies</h1>
+                <p class="mt-4 text-blue-100 text-base md:text-lg">Rapid, peer-supported, and admin-verified financial assistance for Sri Vasavi Engineering College students facing accident recovery costs.</p>
+                <div class="mt-6 flex justify-center gap-4">
+                    <a href="#active-cases" class="bg-white text-blue-900 font-semibold px-6 py-3 rounded-lg shadow hover:bg-slate-100 transition">Donate via UPI Apps</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Counter -->
+        <section class="bg-white border-b border-slate-200 py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <p id="totalRaisedAmount" class="text-2xl font-extrabold text-blue-600">₹0</p>
+                    <p class="text-xs text-slate-500 font-medium">Raised by Vasavi Community</p>
+                </div>
+                <div>
+                    <p id="activeCampaignsCount" class="text-2xl font-extrabold text-blue-600">0</p>
+                    <p class="text-xs text-slate-500 font-medium">Active Campaigns</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-extrabold text-blue-600">100%</p>
+                    <p class="text-xs text-slate-500 font-medium">Verified by SVEC Admin</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-extrabold text-blue-600">Direct UPI</p>
+                    <p class="text-xs text-slate-500 font-medium">Instant Payment Transfer</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Emergency Cases -->
+        <main id="active-cases" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Urgent Student Relief Cases</h2>
+                    <p class="text-slate-600 text-sm">Verified accident emergencies requiring immediate financial help.</p>
+                </div>
+            </div>
+
+            <div id="casesContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Active approved cases inserted dynamically via JS -->
+            </div>
+        </main>
+
+        <!-- CONTRIBUTOR FEED / WALL OF KINDNESS -->
+        <section id="contributor-feed" class="bg-slate-100 border-t border-slate-200 py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Peer Solidarity</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-900 mt-1">Vasavi Community Contributor Feed</h2>
+                        <p class="text-slate-600 text-sm">Live stream of student, faculty, and alumni peer contributions.</p>
+                    </div>
+                    <button onclick="openManualContributorModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-hand-holding-heart"></i> Add Contribution Details
+                    </button>
+                </div>
+
+                <!-- Feed Cards Grid -->
+                <div id="contributorFeedContainer" class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- VIEW 2: EMERGENCY REQUEST FORM PAGE -->
+    <div id="requestView" class="hidden">
+        <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 flex-grow">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <span class="bg-red-100 text-red-700 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">Official Verification Request</span>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">Apply for Emergency Financial Assistance</h1>
+                    <p class="text-slate-600 text-sm mt-1">Submit authentic medical and institutional details for verification.</p>
+                </div>
+                <button onclick="showView('homeView')" class="text-sm font-medium text-slate-600 hover:text-blue-600 transition flex items-center gap-2 border border-slate-300 px-3 py-1.5 rounded-lg bg-white">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Cases
+                </button>
+            </div>
+
+            <form id="emergencyRequestForm" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <!-- Web3Forms Config -->
+                <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+                <input type="hidden" name="subject" value="New SVEC Student Emergency Relief Request">
+                <input type="hidden" name="from_name" value="SVEC Relief Portal">
+
+                <!-- Section 1: Student & Patient Information -->
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-user-graduate text-blue-600"></i> Student & Patient Information
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Full Student Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="Student Name" required placeholder="e.g. K. Sai Teja" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Roll / Student ID Number <span class="text-red-500">*</span></label>
+                            <input type="text" name="Roll Number" required placeholder="e.g. 21A81A05XX" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Department <span class="text-red-500">*</span></label>
+                            <select name="Department" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="">Select Department</option>
+                                <option value="CSE">Computer Science & Engineering (CSE)</option>
+                                <option value="ECE">Electronics & Communication (ECE)</option>
+                                <option value="EEE">Electrical & Electronics (EEE)</option>
+                                <option value="MECH">Mechanical Engineering (MECH)</option>
+                                <option value="CIVIL">Civil Engineering (CIVIL)</option>
+                                <option value="AIDS">AI & Data Science (AI&DS)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Year of Study <span class="text-red-500">*</span></label>
+                            <select name="Year of Study" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="">Select Academic Year</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Hospital & Medical Details -->
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-hospital text-red-600"></i> Hospital & Medical Details
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Hospital Name <span class="text-red-500">*</span></label>
+                                <input type="text" name="Hospital Name" required placeholder="e.g. Apollo Hospital, Eluru" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Requested Amount (₹) <span class="text-red-500">*</span></label>
+                                <input type="number" name="Requested Amount (INR)" required placeholder="e.g. 150000" min="1000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Attending Doctor / Contact</label>
+                                <input type="text" name="Doctor Contact Details" placeholder="Dr. Name / Hospital Contact No." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Emergency Type <span class="text-red-500">*</span></label>
+                                <select name="Emergency Category" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                    <option value="">Select Emergency Type</option>
+                                    <option value="Road Accident">Road Accident Trauma</option>
+                                    <option value="Critical Illness">Critical Illness / ICU Care</option>
+                                    <option value="Emergency Surgery">Emergency Surgery</option>
+                                    <option value="Other">Other Medical Emergency</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Brief Emergency Overview <span class="text-red-500">*</span></label>
+                            <textarea name="Emergency Description" required rows="3" placeholder="Describe the accident/situation and current medical condition clearly..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Verification Proofs, Student Photo & Contact -->
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-camera text-blue-600"></i> Student Photo & Verification Documents
+                    </h2>
+
+                    <!-- Photo Upload with Live Preview -->
+                    <div class="mb-4 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                            Student / Patient Photograph <span class="text-red-500">* (Will be displayed on campaign card once approved)</span>
+                        </label>
+                        <div class="flex flex-col sm:flex-row items-center gap-4 mt-2">
+                            <div class="w-24 h-24 rounded-lg bg-slate-200 border-2 border-dashed border-slate-400 flex items-center justify-center overflow-hidden flex-shrink-0 relative">
+                                <img id="studentPhotoPreview" src="" alt="Preview" class="w-full h-full object-cover hidden">
+                                <div id="previewPlaceholder" class="text-center p-2">
+                                    <i class="fa-solid fa-user text-slate-400 text-2xl"></i>
+                                    <span class="text-[10px] text-slate-500 block mt-1">Photo Preview</span>
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <input type="file" id="studentPhotoInput" name="student_photo" required accept="image/*" onchange="previewStudentPhoto(this)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                                <p class="text-[11px] text-slate-500 mt-1.5">Upload a clear photo of the student/patient for verified identification.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Applicant Phone Number <span class="text-red-500">*</span></label>
+                            <input type="tel" name="Phone Number" required placeholder="10-digit Mobile Number" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Upload Medical Estimates / Bills <span class="text-red-500">*</span></label>
+                            <input type="file" name="attachment" required accept=".pdf,.png,.jpg,.jpeg" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3 text-xs text-amber-800">
+                    <i class="fa-solid fa-shield-halved text-amber-600 text-base mt-0.5"></i>
+                    <p>All photos and medical data will be verified by the college administration and hospital authorities prior to campaign activation.</p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg text-sm shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Request for Admin Verification
+                </button>
+            </form>
+        </main>
+    </div>
+
+    <!-- VIEW 3: ADMIN DASHBOARD -->
+    <div id="adminView" class="hidden">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield text-blue-900"></i> Administration Portal
+                    </h1>
+                    <p class="text-sm text-slate-600">Review, verify student photos, approve, or revoke relief campaigns anytime.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="resetDemoData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition">
+                        <i class="fa-solid fa-arrows-rotate mr-1"></i> Reset Demo Data
+                    </button>
+                    <button onclick="logoutAdmin()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm font-semibold px-4 py-2 rounded-lg transition">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Requests Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <h2 class="font-bold text-slate-900 text-base">Submitted Requests for Relief Funds</h2>
+                    <span id="requestsCountBadge" class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">3 Total Requests</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-700">
+                        <thead class="bg-slate-100 text-xs font-semibold uppercase text-slate-600">
+                            <tr>
+                                <th class="px-6 py-3">Student Photo & Info</th>
+                                <th class="px-6 py-3">Hospital & Category</th>
+                                <th class="px-6 py-3">Amount</th>
+                                <th class="px-6 py-3">Contact</th>
+                                <th class="px-6 py-3">Status</th>
+                                <th class="px-6 py-3 text-center">Administrative Control</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestTableBody" class="divide-y divide-slate-200">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-blue-900"></i> Admin Login
+                </h3>
+                <button onclick="toggleModal('adminLoginModal')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Username</label>
+                    <input type="text" id="adminUsername" required placeholder="Enter username" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Password</label>
+                    <input type="password" id="adminPassword" required placeholder="Enter password" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <p id="loginError" class="text-xs text-red-600 hidden">Invalid Username or Password!</p>
+                <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 rounded-lg text-sm transition">
+                    Login to Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- STEP 1: PAYMENT MODAL -->
+    <div id="donateModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 text-center">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900">Donate for <span id="donateStudentName">Student</span></h3>
+                <button onclick="toggleModal('donateModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="space-y-4 text-left">
+                <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">H</div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-900">Hema Chandra</p>
+                        <p class="text-xs text-blue-700 font-mono">tomff2445@okaxis</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Enter Amount (₹)</label>
+                    <div class="grid grid-cols-4 gap-2 mb-2">
+                        <button type="button" onclick="setAmount(100)" class="border border-slate-200 py-1.5 rounded-md text-sm font-medium hover:border-blue-500 focus:bg-blue-50">₹100</button>
+                        <button type="button" onclick="setAmount(500)" class="border border-slate-200 py-1.5 rounded-md text-sm font-medium hover:border-blue-500 focus:bg-blue-50">₹500</button>
+                        <button type="button" onclick="setAmount(1000)" class="border border-slate-200 py-1.5 rounded-md text-sm font-medium hover:border-blue-500 focus:bg-blue-50">₹1000</button>
+                        <button type="button" onclick="setAmount(2000)" class="border border-slate-200 py-1.5 rounded-md text-sm font-medium hover:border-blue-500 focus:bg-blue-50">₹2000</button>
+                    </div>
+                    <input type="number" id="customAmount" value="500" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Custom amount (₹)">
+                </div>
+
+                <div class="flex flex-col items-center justify-center p-3 border border-dashed border-slate-300 rounded-lg bg-slate-50">
+                    <img id="upiQrCode" src="" alt="UPI QR Code" class="w-44 h-44 rounded-md shadow-sm border">
+                    <p class="text-xs text-slate-500 mt-2">Scan with GPay, PhonePe, Paytm, or any UPI app</p>
+                    <button onclick="promptContributorFeedDetails('QR Scan')" class="mt-3 bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-check-circle text-emerald-600"></i> Done scanning? Record in Contributor Feed
+                    </button>
+                </div>
+
+                <div class="border-t border-slate-200 pt-3">
+                    <p class="text-xs font-semibold text-slate-500 mb-3">OR PAY DIRECTLY VIA APP</p>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="payAndPrompt('gpay')" class="border border-slate-200 p-2.5 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition">
+                            <i class="fa-brands fa-google-pay text-2xl text-blue-600"></i>
+                            <span class="text-sm font-medium text-slate-800">Google Pay</span>
+                        </button>
+                        <button onclick="payAndPrompt('phonepe')" class="border border-slate-200 p-2.5 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition">
+                            <i class="fa-solid fa-wallet text-xl text-purple-600"></i>
+                            <span class="text-sm font-medium text-slate-800">PhonePe</span>
+                        </button>
+                        <button onclick="payAndPrompt('paytm')" class="border border-slate-200 p-2.5 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition">
+                            <i class="fa-solid fa-bolt text-xl text-sky-500"></i>
+                            <span class="text-sm font-medium text-slate-800">Paytm</span>
+                        </button>
+                        <button onclick="payAndPrompt('generic')" class="border border-slate-200 p-2.5 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition">
+                            <i class="fa-solid fa-qrcode text-xl text-emerald-600"></i>
+                            <span class="text-sm font-medium text-slate-800">Any UPI</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: POST-DONATION CONTRIBUTOR FEED PROMPT MODAL -->
+    <div id="postDonationPromptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center border border-slate-100">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                <i class="fa-solid fa-heart-pulse animate-bounce"></i>
+            </div>
+            
+            <h3 class="text-lg font-extrabold text-slate-900">Thank You for Your Support!</h3>
+            <p class="text-xs text-slate-600 mt-1">Payment initiated for <span id="promptBeneficiaryDisplay" class="font-bold text-blue-900">Student</span> (₹<span id="promptAmountDisplay" class="font-bold">500</span>)</p>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3.5 my-4 text-left">
+                <p class="text-xs font-bold text-blue-950 flex items-center gap-1.5">
+                    <i class="fa-solid fa-bullhorn text-blue-600"></i> Feature on Vasavi Contributor Feed?
+                </p>
+                <p class="text-[11px] text-blue-800 mt-0.5">Inspire fellow students and peers to support our college family.</p>
+            </div>
+
+            <form onsubmit="handlePostDonationSubmit(event)" class="space-y-3.5 text-left">
+                <!-- Name Field -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Your Name</label>
+                    <input type="text" id="feedDonorName" placeholder="Enter your full name" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+
+                <!-- Branch / Department -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Department</label>
+                        <select id="feedDonorDept" class="w-full border border-slate-300 rounded-lg px-2.5 py-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                            <option value="CSE">CSE</option>
+                            <option value="ECE">ECE</option>
+                            <option value="EEE">EEE</option>
+                            <option value="MECH">MECH</option>
+                            <option value="CIVIL">CIVIL</option>
+                            <option value="AIDS">AI&DS</option>
+                            <option value="Faculty">Faculty</option>
+                            <option value="Alumni">Alumni</option>
+                            <option value="Friend of SVEC">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Year / Role</label>
+                        <select id="feedDonorYear" class="w-full border border-slate-300 rounded-lg px-2.5 py-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                            <option value="Staff">Staff</option>
+                            <option value="Alumnus">Alumnus</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Privacy Checkbox -->
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="feedAnonymousCheckbox" onchange="toggleAnonymousField(this)" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                    <label for="feedAnonymousCheckbox" class="text-xs text-slate-600 font-medium cursor-pointer">
+                        Display anonymously (e.g. <em>"Anonymous Vasavian"</em>)
+                    </label>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="skipContributorFeed()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition">
+                        Skip
+                    </button>
+                    <button type="submit" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-paper-plane"></i> Display on Feed
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const targetUPI = "tomff2445@okaxis";
+        const payeeName = "Hema Chandra";
+        let currentStudent = '';
+        let currentDonationApp = 'UPI';
+        let currentUploadedPhotoBase64 = '';
+
+        // Default campaigns with verified student photos
+        const defaultFundRequests = [
+            { 
+                id: 101, 
+                name: 'K. Sai Teja', 
+                roll: '21A81A05XX', 
+                dept: 'CSE (3rd Yr)', 
+                hospital: 'Apollo, Eluru', 
+                amount: '₹2,50,000', 
+                category: 'Road Accident', 
+                phone: '9876543210', 
+                status: 'Approved', 
+                desc: 'Sai Teja met with a major road accident returning home from campus. Needs assistance for emergency orthopedic surgery.',
+                photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80'
+            },
+            { 
+                id: 102, 
+                name: 'V. Anusha', 
+                roll: '22A81A04XX', 
+                dept: 'ECE (2nd Yr)', 
+                hospital: 'Government Hospital, Eluru', 
+                amount: '₹1,20,000', 
+                category: 'Orthopedic Care', 
+                phone: '9123456789', 
+                status: 'Approved', 
+                desc: 'Anusha suffered multiple fractures in a two-wheeler accident near Tadepalligudem. Requires funds for urgent surgery.',
+                photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=80'
+            },
+            { 
+                id: 103, 
+                name: 'M. Rajesh', 
+                roll: '20A81A02XX', 
+                dept: 'EEE (4th Yr)', 
+                hospital: 'City Care Emergency', 
+                amount: '₹1,80,000', 
+                category: 'Emergency Surgery', 
+                phone: '9012345678', 
+                status: 'Pending Verification', 
+                desc: 'Rajesh experienced trauma-related injuries needing immediate medical treatment and ICU stay.',
+                photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80'
+            }
+        ];
+
+        // Default contributor feed records
+        const defaultContributorList = [
+            { name: "S. K. Verma", dept: "Alumnus", student: "K. Sai Teja", amount: 5000, app: "GPay", time: "15 mins ago" },
+            { name: "Vasavi Batch 2022", dept: "ECE 2nd Yr", student: "V. Anusha", amount: 8500, app: "PhonePe", time: "45 mins ago" },
+            { name: "Anonymous Vasavian", dept: "CSE 3rd Yr", student: "K. Sai Teja", amount: 1000, app: "Paytm", time: "2 hours ago" },
+            { name: "Faculty Club SVEC", dept: "Faculty", student: "V. Anusha", amount: 15000, app: "GPay", time: "4 hours ago" }
+        ];
+
+        // Load persisted state or initialize with defaults
+        let fundRequests = JSON.parse(localStorage.getItem('svec_fund_requests')) || defaultFundRequests;
+        let contributorList = JSON.parse(localStorage.getItem('svec_contributors')) || defaultContributorList;
+
+        function saveState() {
+            localStorage.setItem('svec_fund_requests', JSON.stringify(fundRequests));
+            localStorage.setItem('svec_contributors', JSON.stringify(contributorList));
+        }
+
+        function resetDemoData() {
+            if (confirm("Reset all cases and contributors back to default approved demo state?")) {
+                fundRequests = JSON.parse(JSON.stringify(defaultFundRequests));
+                contributorList = JSON.parse(JSON.stringify(defaultContributorList));
+                saveState();
+                renderAdminTable();
+                renderActiveCampaigns();
+                renderContributorFeed();
+                alert("Database reset to demo state!");
+            }
+        }
+
+        // Student Photo live preview
+        function previewStudentPhoto(input) {
+            const preview = document.getElementById('studentPhotoPreview');
+            const placeholder = document.getElementById('previewPlaceholder');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentUploadedPhotoBase64 = e.target.result;
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function renderContributorFeed() {
+            const container = document.getElementById('contributorFeedContainer');
+            if (!container) return;
+
+            // Recalculate total raised amount
+            const total = contributorList.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+            const totalRaisedEl = document.getElementById('totalRaisedAmount');
+            if (totalRaisedEl) {
+                totalRaisedEl.innerText = `₹${total.toLocaleString('en-IN')}`;
+            }
+
+            if (contributorList.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
+                        <i class="fa-solid fa-heart-circle-plus text-3xl text-slate-300 mb-2 block"></i>
+                        <p class="text-sm font-semibold text-slate-700">No contributions logged yet</p>
+                        <p class="text-xs text-slate-500 mt-1">Be the first to donate and support our students in need!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = contributorList.map((item, index) => `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-blue-300 transition ${index === 0 ? 'new-feed-entry ring-2 ring-emerald-400/50' : ''}">
+                    <div>
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900 truncate">${item.name}</h4>
+                                <span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium">${item.dept || 'Vasavian'}</span>
+                            </div>
+                            <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded flex-shrink-0">
+                                +₹${Number(item.amount).toLocaleString('en-IN')}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2 truncate">For: <span class="font-semibold text-slate-700">${item.student}</span></p>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] text-slate-400 mt-3 pt-2 border-t border-slate-100">
+                        <span class="inline-flex items-center gap-1 font-medium text-slate-600">
+                            <i class="fa-solid fa-mobile-screen text-blue-600"></i> ${item.app}
+                        </span>
+                        <span>${item.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Trigger UPI app + automatically ask to show details on contributor feed
+        function payAndPrompt(provider) {
+            currentDonationApp = provider === 'gpay' ? 'GPay' : provider === 'phonepe' ? 'PhonePe' : provider === 'paytm' ? 'Paytm' : 'UPI';
+            redirectToUPI(provider);
+            setTimeout(() => {
+                promptContributorFeedDetails(currentDonationApp);
+            }, 800);
+        }
+
+        function promptContributorFeedDetails(appName) {
+            const amount = Number(document.getElementById('customAmount').value) || 500;
+            document.getElementById('donateModal').classList.add('hidden');
+            
+            document.getElementById('promptBeneficiaryDisplay').innerText = currentStudent || 'Vasavi Student Relief';
+            document.getElementById('promptAmountDisplay').innerText = amount.toLocaleString('en-IN');
+            
+            document.getElementById('feedDonorName').value = '';
+            document.getElementById('feedAnonymousCheckbox').checked = false;
+            document.getElementById('feedDonorName').disabled = false;
+            
+            toggleModal('postDonationPromptModal');
+        }
+
+        function openManualContributorModal() {
+            currentStudent = 'General Student Relief';
+            promptContributorFeedDetails('UPI');
+        }
+
+        function toggleAnonymousField(checkbox) {
+            const nameInput = document.getElementById('feedDonorName');
+            if (checkbox.checked) {
+                nameInput.value = 'Anonymous Vasavian';
+                nameInput.disabled = true;
+            } else {
+                nameInput.value = '';
+                nameInput.disabled = false;
+            }
+        }
+
+        function handlePostDonationSubmit(e) {
+            e.preventDefault();
+            const isAnon = document.getElementById('feedAnonymousCheckbox').checked;
+            const inputName = document.getElementById('feedDonorName').value.trim();
+            const dept = document.getElementById('feedDonorDept').value;
+            const year = document.getElementById('feedDonorYear').value;
+            const amount = Number(document.getElementById('customAmount').value) || 500;
+
+            const finalName = isAnon || !inputName ? 'Anonymous Vasavian' : inputName;
+            const finalDept = `${dept} (${year})`;
+
+            // Add directly to live feed
+            contributorList.unshift({
+                name: finalName,
+                dept: finalDept,
+                student: currentStudent || 'Vasavi Emergency Relief',
+                amount: amount,
+                app: currentDonationApp || 'UPI',
+                time: "Just now"
+            });
+
+            saveState();
+            renderContributorFeed();
+            toggleModal('postDonationPromptModal');
+
+            // Scroll to the newly added item in the feed
+            showView('homeView');
+            const feedSection = document.getElementById('contributor-feed');
+            if (feedSection) {
+                feedSection.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            alert(`Thank you, ${finalName}! Your contribution of ₹${amount.toLocaleString('en-IN')} has been added to the Contributor Feed.`);
+        }
+
+        function skipContributorFeed() {
+            toggleModal('postDonationPromptModal');
+            showView('homeView');
+        }
+
+        function renderActiveCampaigns() {
+            const container = document.getElementById('casesContainer');
+            const approved = fundRequests.filter(r => r.status === 'Approved');
+            
+            document.getElementById('activeCampaignsCount').innerText = approved.length;
+
+            if (approved.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
+                        <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3 block"></i>
+                        <h3 class="text-base font-semibold text-slate-700">No Active Relief Campaigns</h3>
+                        <p class="text-xs text-slate-500 mt-1">There are currently no active student campaigns. Submitted requests will appear here once verified and approved by the college administration.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Render each campaign with the verified student's individual photo
+            container.innerHTML = approved.map((req) => `
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition">
+                    <div class="relative h-52 bg-slate-100">
+                        <img src="${req.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80'}" alt="${req.name}" class="h-full w-full object-cover">
+                        <span class="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-circle-check"></i> SVEC Verified
+                        </span>
+                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/80 to-transparent p-3 pt-6 text-white">
+                            <span class="text-xs font-semibold text-blue-200 block">${req.dept}</span>
+                            <h3 class="text-base font-bold">${req.name}</h3>
+                        </div>
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded border border-red-200">${req.category}</span>
+                                <span class="text-xs text-slate-500 font-medium"><i class="fa-solid fa-hospital text-red-500 mr-1"></i>${req.hospital}</span>
+                            </div>
+                            <p class="text-slate-600 text-sm line-clamp-3">${req.desc}</p>
+                        </div>
+                        <div class="mt-5 pt-3 border-t border-slate-100">
+                            <div class="flex justify-between text-sm font-semibold mb-1">
+                                <span class="text-slate-700">₹0 raised</span>
+                                <span class="text-slate-500">Goal: ${req.amount}</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <button onclick="openDonateModal('${req.name}')" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-mobile-screen"></i> Donate via UPI App
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize Feeds
+        renderActiveCampaigns();
+        renderContributorFeed();
+
+        function toggleMenu() {
+            document.getElementById('adminDropdown').classList.toggle('hidden');
+        }
+
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('adminDropdown');
+            const menuBtn = e.target.closest('button');
+            if (!menuBtn || !menuBtn.onclick.toString().includes('toggleMenu')) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        function showView(viewId) {
+            document.getElementById('homeView').classList.add('hidden');
+            document.getElementById('requestView').classList.add('hidden');
+            document.getElementById('adminView').classList.add('hidden');
+
+            document.getElementById(viewId).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openAdminLoginModal() {
+            document.getElementById('adminDropdown').classList.add('hidden');
+            document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+            toggleModal('adminLoginModal');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUsername').value.trim();
+            const p = document.getElementById('adminPassword').value.trim();
+
+            if (u === 'hemachandra' && p === 'srivasavi') {
+                toggleModal('adminLoginModal');
+                renderAdminTable();
+                showView('adminView');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            showView('homeView');
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('requestTableBody');
+            document.getElementById('requestsCountBadge').innerText = `${fundRequests.length} Total Requests`;
+            
+            tbody.innerHTML = fundRequests.map(req => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${req.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80'}" alt="${req.name}" class="w-12 h-12 rounded-lg object-cover border border-slate-300 flex-shrink-0">
+                            <div>
+                                <div class="font-bold text-slate-900">${req.name}</div>
+                                <div class="text-xs text-slate-500">${req.roll} • ${req.dept}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-slate-900 font-medium">${req.hospital}</div>
+                        <span class="inline-block bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded mt-1">${req.category}</span>
+                    </td>
+                    <td class="px-6 py-4 font-bold text-blue-900">${req.amount}</td>
+                    <td class="px-6 py-4 text-xs font-mono text-slate-600">${req.phone}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2.5 py-1 text-xs font-bold rounded-full ${
+                            req.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' : 
+                            req.status === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
+                        }">
+                            ${req.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex justify-center items-center gap-2">
+                            ${req.status === 'Approved' ? `
+                                <button onclick="updateStatus(${req.id}, 'Rejected')" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-md font-semibold transition shadow-sm flex items-center gap-1" title="Revoke and remove from public campaigns">
+                                    <i class="fa-solid fa-ban"></i> Reject / Revoke
+                                </button>
+                            ` : req.status === 'Rejected' ? `
+                                <button onclick="updateStatus(${req.id}, 'Approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-md font-semibold transition shadow-sm flex items-center gap-1" title="Re-approve campaign">
+                                    <i class="fa-solid fa-check"></i> Re-Approve
+                                </button>
+                            ` : `
+                                <button onclick="updateStatus(${req.id}, 'Approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-2.5 py-1 rounded font-semibold transition shadow-sm">
+                                    Approve
+                                </button>
+                                <button onclick="updateStatus(${req.id}, 'Rejected')" class="bg-red-600 hover:bg-red-700 text-white text-xs px-2.5 py-1 rounded font-semibold transition shadow-sm">
+                                    Reject
+                                </button>
+                            `}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStatus(id, newStatus) {
+            const req = fundRequests.find(r => r.id === id);
+            if (req) {
+                const prevStatus = req.status;
+                req.status = newStatus;
+                saveState();
+                renderAdminTable();
+                renderActiveCampaigns();
+                
+                if (prevStatus === 'Approved' && newStatus === 'Rejected') {
+                    alert(`Campaign for "${req.name}" has been Revoked and Rejected. It is no longer visible on the public active campaigns page.`);
+                } else if (newStatus === 'Approved') {
+                    alert(`Campaign for "${req.name}" is now Approved and live on the public landing page with their uploaded photo.`);
+                }
+            }
+        }
+
+        function toggleModal(modalId) {
+            document.getElementById(modalId).classList.toggle('hidden');
+        }
+
+        function openDonateModal(name) {
+            currentStudent = name;
+            document.getElementById('donateStudentName').innerText = name;
+            updateQrCode();
+            toggleModal('donateModal');
+        }
+
+        function setAmount(val) {
+            document.getElementById('customAmount').value = val;
+            updateQrCode();
+        }
+
+        function updateQrCode() {
+            const amount = document.getElementById('customAmount').value || '100';
+            const note = encodeURIComponent(`SVEC Relief Fund for ${currentStudent}`);
+            const upiUrl = `upi://pay?pa=${targetUPI}&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR&tn=${note}`;
+            document.getElementById('upiQrCode').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUrl)}`;
+        }
+
+        document.getElementById('customAmount').addEventListener('input', updateQrCode);
+
+        function redirectToUPI(provider) {
+            const amount = document.getElementById('customAmount').value || '100';
+            const note = encodeURIComponent(`SVEC Relief Fund for ${currentStudent}`);
+            const upiString = `upi://pay?pa=${targetUPI}&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR&tn=${note}`;
+
+            if (provider === 'gpay') {
+                window.location.href = `intent://pay?pa=${targetUPI}&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR&tn=${note}#Intent;scheme=upi;package=com.google.android.apps.nfc.plugin.card.bpay;end`;
+            } else if (provider === 'phonepe') {
+                window.location.href = `intent://pay?pa=${targetUPI}&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR&tn=${note}#Intent;scheme=upi;package=com.phonepe.app;end`;
+            } else if (provider === 'paytm') {
+                window.location.href = `intent://pay?pa=${targetUPI}&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR&tn=${note}#Intent;scheme=upi;package=net.one97.paytm;end`;
+            } else {
+                window.location.href = upiString;
+            }
+        }
+
+        document.getElementById('emergencyRequestForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnContent = submitBtn.innerHTML;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
+
+            try {
+                const formData = new FormData(this);
+                
+                // Use uploaded photo or fallback
+                const studentPhoto = currentUploadedPhotoBase64 || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80';
+
+                const newReq = {
+                    id: Date.now(),
+                    name: formData.get('Student Name') || 'New Student',
+                    roll: formData.get('Roll Number') || 'N/A',
+                    dept: `${formData.get('Department')} (${formData.get('Year of Study')})`,
+                    hospital: formData.get('Hospital Name') || 'Hospital',
+                    amount: `₹${Number(formData.get('Requested Amount (INR)')).toLocaleString('en-IN')}`,
+                    category: formData.get('Emergency Category') || 'Medical Emergency',
+                    phone: formData.get('Phone Number') || 'N/A',
+                    status: 'Pending Verification',
+                    desc: formData.get('Emergency Description') || 'Submitted emergency request pending review.',
+                    photo: studentPhoto
+                };
+                fundRequests.unshift(newReq);
+                saveState();
+
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("Your emergency request with student photograph has been submitted for admin verification!");
+                    this.reset();
+                    document.getElementById('studentPhotoPreview').classList.add('hidden');
+                    document.getElementById('previewPlaceholder').classList.remove('hidden');
+                    currentUploadedPhotoBase64 = '';
+                    showView('homeView');
+                } else {
+                    alert("Submission error: " + data.message);
+                }
+            } catch (error) {
+                alert("Request logged with photo. Details forwarded for administrative verification.");
+                this.reset();
+                document.getElementById('studentPhotoPreview').classList.add('hidden');
+                document.getElementById('previewPlaceholder').classList.remove('hidden');
+                currentUploadedPhotoBase64 = '';
+                showView('homeView');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+            }
+        });
+    </script>
+</body>
+</html>
