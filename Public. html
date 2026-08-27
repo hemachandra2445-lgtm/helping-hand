@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVEC Student Emergency Relief Fund | Sri Vasavi Engineering College</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%); }
+        @keyframes highlightFeed { 0% { transform: scale(0.95); opacity: 0; } 50% { transform: scale(1.03); } 100% { transform: scale(1); opacity: 1; } }
+        .new-feed-entry { animation: highlightFeed 0.5s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 flex flex-col min-h-screen">
+
+    <header class="bg-white shadow-sm sticky top-0 z-40 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showView('homeView')">
+                <div class="bg-blue-900 text-white font-black text-lg px-3 py-1.5 rounded-md tracking-wider flex-shrink-0">SVEC</div>
+                <div class="border-l border-slate-300 pl-3 leading-tight">
+                    <span class="text-sm font-bold tracking-tight text-slate-900 block">Sri Vasavi Engineering College</span>
+                    <span class="text-xs text-blue-600 font-semibold block mt-0.5">Emergency Student Relief Network</span>
+                </div>
+            </div>
+            <nav class="hidden md:flex gap-6 font-medium text-sm text-slate-600">
+                <button onclick="showView('homeView')" class="hover:text-blue-600 transition">Active Relief Cases</button>
+                <a href="#contributor-feed" onclick="showView('homeView')" class="hover:text-blue-600 transition">Contributor Feed</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button onclick="showView('requestView')" class="bg-red-600 hover:bg-red-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle"></i> <span class="hidden sm:inline">Request Emergency Help</span><span class="sm:hidden">Request Help</span>
+                </button>
+                
+                <div class="relative">
+                    <button onclick="toggleMenu()" class="p-2 text-slate-700 hover:text-blue-900 focus:outline-none text-xl rounded-lg hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div id="adminDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 z-50 overflow-hidden">
+                        <button onclick="openAdminLoginModal()" class="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-900 transition flex items-center gap-2">
+                            <i class="fa-solid fa-user-shield text-blue-600"></i> Administration Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="homeView">
+        <section class="gradient-bg text-white py-12 md:py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+                <span class="bg-blue-400/20 text-blue-100 text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full border border-blue-300/30">Official SVEC Student Support Initiative</span>
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mt-4 leading-tight">Supporting Our Vasavi Family in Medical Emergencies</h1>
+                <p class="mt-4 text-blue-100 text-base md:text-lg">Rapid, peer-supported, and admin-verified financial assistance for Sri Vasavi Engineering College students facing accident recovery costs.</p>
+                <div class="mt-6 flex justify-center gap-4">
+                    <a href="#active-cases" class="bg-white text-blue-900 font-semibold px-6 py-3 rounded-lg shadow hover:bg-slate-100 transition">Donate via UPI Apps</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white border-b border-slate-200 py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <p id="totalRaisedAmount" class="text-2xl font-extrabold text-blue-600">₹0</p>
+                    <p class="text-xs text-slate-500 font-medium">Raised by Vasavi Community</p>
+                </div>
+                <div>
+                    <p id="activeCampaignsCount" class="text-2xl font-extrabold text-blue-600">0</p>
+                    <p class="text-xs text-slate-500 font-medium">Active Campaigns</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-extrabold text-blue-600">100%</p>
+                    <p class="text-xs text-slate-500 font-medium">Verified by SVEC Admin</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-extrabold text-blue-600">Direct UPI</p>
+                    <p class="text-xs text-slate-500 font-medium">Instant Payment Transfer</p>
+                </div>
+            </div>
+        </section>
+
+        <main id="active-cases" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Urgent Student Relief Cases</h2>
+                    <p class="text-slate-600 text-sm">Verified accident emergencies requiring immediate financial help.</p>
+                </div>
+            </div>
+            <div id="casesContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </main>
+
+        <section id="contributor-feed" class="bg-slate-100 border-t border-slate-200 py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Peer Solidarity</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-900 mt-1">Vasavi Community Contributor Feed</h2>
+                        <p class="text-slate-600 text-sm">Live stream of student, faculty, and alumni peer contributions.</p>
+                    </div>
+                    <button onclick="openManualContributorModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-hand-holding-heart"></i> Add Contribution Details
+                    </button>
+                </div>
+                <div id="contributorFeedContainer" class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+            </div>
+        </section>
+    </div>
+
+    <div id="requestView" class="hidden">
+        <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 flex-grow">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <span class="bg-red-100 text-red-700 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">Official Verification Request</span>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">Apply for Emergency Financial Assistance</h1>
+                </div>
+                <button onclick="showView('homeView')" class="text-sm font-medium text-slate-600 hover:text-blue-600 transition flex items-center gap-2 border border-slate-300 px-3 py-1.5 rounded-lg bg-white">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Cases
+                </button>
+            </div>
+
+            <form id="emergencyRequestForm" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-user-graduate text-blue-600"></i> Student & Patient Information
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Full Student Name *</label>
+                            <input type="text" name="Student Name" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Roll / Student ID Number *</label>
+                            <input type="text" name="Roll Number" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Department *</label>
+                            <select name="Department" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="">Select Department</option>
+                                <option value="CSE">CSE</option>
+                                <option value="ECE">ECE</option>
+                                <option value="EEE">EEE</option>
+                                <option value="MECH">MECH</option>
+                                <option value="CIVIL">CIVIL</option>
+                                <option value="AIDS">AI&DS</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Year of Study *</label>
+                            <select name="Year of Study" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="">Select Academic Year</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-hospital text-red-600"></i> Hospital & Medical Details
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Hospital Name *</label>
+                                <input type="text" name="Hospital Name" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Requested Amount (₹) *</label>
+                                <input type="number" name="Requested Amount (INR)" required min="1000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Emergency Category *</label>
+                                <select name="Emergency Category" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                    <option value="Road Accident">Road Accident Trauma</option>
+                                    <option value="Critical Illness">Critical Illness / ICU Care</option>
+                                    <option value="Emergency Surgery">Emergency Surgery</option>
+                                    <option value="Other">Other Medical Emergency</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Applicant Phone Number *</label>
+                                <input type="tel" name="Phone Number" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Emergency Description *</label>
+                            <textarea name="Emergency Description" required rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-camera text-blue-600"></i> Upload Identification & Medical Documents
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Student Photo *</label>
+                            <input type="file" name="student_photo" required accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Medical Bills / Estimate *</label>
+                            <input type="file" name="attachment" required accept=".pdf,.png,.jpg,.jpeg" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg text-sm transition">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Request for Admin Verification
+                </button>
+            </form>
+        </main>
+    </div>
+
+    <div id="adminView" class="hidden">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-blue-900"></i> Administration Portal
+                </h1>
+                <button onclick="logoutAdmin()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm font-semibold px-4 py-2 rounded-lg transition">Logout</button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <h2 class="font-bold text-slate-900 text-base">Submitted Relief Requests</h2>
+                    <span id="requestsCountBadge" class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">0 Requests</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-700">
+                        <thead class="bg-slate-100 text-xs font-semibold uppercase text-slate-600">
+                            <tr>
+                                <th class="px-6 py-3">Student Photo & Info</th>
+                                <th class="px-6 py-3">Hospital</th>
+                                <th class="px-6 py-3">Amount</th>
+                                <th class="px-6 py-3">Contact</th>
+                                <th class="px-6 py-3">Status</th>
+                                <th class="px-6 py-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestTableBody" class="divide-y divide-slate-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="adminLoginModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900">Admin Login</h3>
+                <button onclick="toggleModal('adminLoginModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Username</label>
+                    <input type="text" id="adminUsername" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Password</label>
+                    <input type="password" id="adminPassword" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <p id="loginError" class="text-xs text-red-600 hidden">Invalid Credentials!</p>
+                <button type="submit" class="w-full bg-blue-900 text-white font-bold py-2.5 rounded-lg text-sm">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="donateModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 text-center">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900">Donate for <span id="donateStudentName">Student</span></h3>
+                <button onclick="toggleModal('donateModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Enter Amount (₹)</label>
+                    <input type="number" id="customAmount" value="500" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 border border-dashed rounded-lg bg-slate-50">
+                    <img id="upiQrCode" src="" alt="UPI QR Code" class="w-44 h-44 rounded-md shadow-sm border">
+                    <button onclick="promptContributorFeedDetails()" class="mt-3 bg-emerald-50 text-emerald-700 border border-emerald-300 text-xs font-semibold px-3 py-1.5 rounded-lg">Done scanning? Log on feed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="postDonationPromptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
+            <h3 class="text-lg font-extrabold text-slate-900">Feature on Contributor Feed</h3>
+            <form onsubmit="handlePostDonationSubmit(event)" class="space-y-3.5 text-left mt-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Your Name</label>
+                    <input type="text" id="feedDonorName" placeholder="Enter full name" class="w-full border rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="feedDonorDept" class="border rounded-lg px-2.5 py-2 text-xs bg-white">
+                        <option value="CSE">CSE</option>
+                        <option value="ECE">ECE</option>
+                        <option value="EEE">EEE</option>
+                        <option value="Faculty">Faculty</option>
+                        <option value="Alumni">Alumni</option>
+                    </select>
+                    <select id="feedDonorYear" class="border rounded-lg px-2.5 py-2 text-xs bg-white">
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                        <option value="Staff">Staff</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="feedAnonymousCheckbox" onchange="toggleAnonymousField(this)">
+                    <label for="feedAnonymousCheckbox" class="text-xs text-slate-600">Display anonymously</label>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 text-white text-xs font-bold py-2.5 rounded-lg">Submit to Feed</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API = '/api';
+        const targetUPI = "tomff2445@okaxis";
+        const payeeName = "Hema Chandra";
+        let adminToken = localStorage.getItem('svec_token') || '';
+        let currentStudent = '';
+
+        async function renderActiveCampaigns() {
+            const res = await fetch(`${API}/cases/active`);
+            const approved = await res.json();
+            const container = document.getElementById('casesContainer');
+            document.getElementById('activeCampaignsCount').innerText = approved.length;
+
+            if (approved.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">No active cases currently.</div>`;
+                return;
+            }
+
+            container.innerHTML = approved.map(req => `
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition">
+                    <div class="relative h-52 bg-slate-100">
+                        <img src="${req.photo}" class="h-full w-full object-cover">
+                        <span class="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-circle-check"></i> SVEC Verified</span>
+                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/80 to-transparent p-3 pt-6 text-white">
+                            <span class="text-xs font-semibold text-blue-200 block">${req.dept}</span>
+                            <h3 class="text-base font-bold">${req.name}</h3>
+                        </div>
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <span class="bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded border border-red-200">${req.category}</span>
+                            <p class="text-slate-600 text-sm mt-2">${req.desc}</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100">
+                            <span class="text-sm font-semibold text-slate-700">Goal: ${req.amount}</span>
+                            <button onclick="openDonateModal('${req.name}')" class="w-full mt-3 bg-blue-600 text-white font-medium py-2 rounded-lg text-sm">Donate via UPI</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        async function renderContributorFeed() {
+            const res = await fetch(`${API}/contributors`);
+            const list = await res.json();
+            const total = list.reduce((sum, item) => sum + Number(item.amount), 0);
+            document.getElementById('totalRaisedAmount').innerText = `₹${total.toLocaleString('en-IN')}`;
+            
+            document.getElementById('contributorFeedContainer').innerHTML = list.map(item => `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-900">${item.name}</h4>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">${item.dept}</span>
+                        </div>
+                        <span class="text-xs font-black text-emerald-600">+₹${Number(item.amount).toLocaleString('en-IN')}</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">For: <span class="font-semibold text-slate-700">${item.student}</span></p>
+                </div>`).join('');
+        }
+
+        document.getElementById('emergencyRequestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const res = await fetch(`${API}/cases`, { method: 'POST', body: formData });
+            if (res.ok) {
+                alert("Request submitted successfully!");
+                this.reset();
+                showView('homeView');
+                renderActiveCampaigns();
+            }
+        });
+
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUsername').value;
+            const p = document.getElementById('adminPassword').value;
+            const res = await fetch(`${API}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            });
+            const data = await res.json();
+            if (data.success) {
+                adminToken = data.token;
+                localStorage.setItem('svec_token', adminToken);
+                toggleModal('adminLoginModal');
+                renderAdminTable();
+                showView('adminView');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        async function renderAdminTable() {
+            const res = await fetch(`${API}/cases/all`, { headers: { 'Authorization': `Bearer ${adminToken}` } });
+            const list = await res.json();
+            document.getElementById('requestsCountBadge').innerText = `${list.length} Requests`;
+            document.getElementById('requestTableBody').innerHTML = list.map(req => `
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-4 flex items-center gap-3">
+                        <img src="${req.photo}" class="w-10 h-10 rounded object-cover">
+                        <div><div class="font-bold">${req.name}</div><div class="text-xs text-slate-500">${req.roll}</div></div>
+                    </td>
+                    <td class="px-6 py-4">${req.hospital}</td>
+                    <td class="px-6 py-4 font-bold">${req.amount}</td>
+                    <td class="px-6 py-4 text-xs">${req.phone}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-bold rounded-full bg-blue-100">${req.status}</span></td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="updateStatus(${req.id}, 'Approved')" class="bg-emerald-600 text-white text-xs px-2 py-1 rounded">Approve</button>
+                        <button onclick="updateStatus(${req.id}, 'Rejected')" class="bg-red-600 text-white text-xs px-2 py-1 rounded">Reject</button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        async function updateStatus(id, status) {
+            await fetch(`${API}/cases/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ status })
+            });
+            renderAdminTable();
+            renderActiveCampaigns();
+        }
+
+        async function handlePostDonationSubmit(e) {
+            e.preventDefault();
+            const isAnon = document.getElementById('feedAnonymousCheckbox').checked;
+            const payload = {
+                name: isAnon ? 'Anonymous Vasavian' : document.getElementById('feedDonorName').value || 'Anonymous Vasavian',
+                dept: `${document.getElementById('feedDonorDept').value} (${document.getElementById('feedDonorYear').value})`,
+                student: currentStudent || 'Vasavi Relief',
+                amount: Number(document.getElementById('customAmount').value) || 500,
+                app: 'UPI'
+            };
+            await fetch(`${API}/contributors`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            renderContributorFeed();
+            toggleModal('postDonationPromptModal');
+        }
+
+        function toggleMenu() { document.getElementById('adminDropdown').classList.toggle('hidden'); }
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        function showView(id) {
+            ['homeView', 'requestView', 'adminView'].forEach(v => document.getElementById(v).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function openAdminLoginModal() { toggleModal('adminLoginModal'); }
+        function logoutAdmin() { localStorage.removeItem('svec_token'); showView('homeView'); }
+        function openDonateModal(name) {
+            currentStudent = name;
+            document.getElementById('donateStudentName').innerText = name;
+            const amt = document.getElementById('customAmount').value || '500';
+            document.getElementById('upiQrCode').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`upi://pay?pa=${targetUPI}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR`)}`;
+            toggleModal('donateModal');
+        }
+        function promptContributorFeedDetails() {
+            toggleModal('donateModal');
+            toggleModal('postDonationPromptModal');
+        }
+        function toggleAnonymousField(cb) {
+            document.getElementById('feedDonorName').disabled = cb.checked;
+        }
+        function openManualContributorModal() {
+            currentStudent = 'General Relief';
+            toggleModal('postDonationPromptModal');
+        }
+
+        renderActiveCampaigns();
+        renderContributorFeed();
+    </script>
+</body>
+</html>
