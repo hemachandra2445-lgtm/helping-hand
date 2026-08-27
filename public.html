@@ -1,0 +1,378 @@
+<script>
+    const API_BASE = '';
+    const targetUPI = "tomff2445@okaxis";
+    const payeeName = "Hema Chandra";
+    let currentStudent = '';
+    let currentDonationApp = 'UPI';
+    let currentUploadedPhotoBase64 = '';
+    let adminToken = localStorage.getItem('svec_admin_jwt') || '';
+
+    // Load Database Stats
+    async function loadStats() {
+        try {
+            const res = await fetch(`${API_BASE}/api/stats`);
+            const json = await res.json();
+            if (json.success) {
+                document.getElementById('totalRaisedAmount').innerText = `₹${json.data.totalRaised.toLocaleString('en-IN')}`;
+                document.getElementById('activeCampaignsCount').innerText = json.data.activeCampaigns;
+            }
+        } catch (e) { console.error("Stats load error:", e); }
+    }
+
+    // Load Live Active Campaigns from Database
+    async function renderActiveCampaigns() {
+        const container = document.getElementById('casesContainer');
+        try {
+            const res = await fetch(`${API_BASE}/api/campaigns`);
+            const json = await res.json();
+            const approved = json.data || [];
+
+            if (approved.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
+                        <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3 block"></i>
+                        <h3 class="text-base font-semibold text-slate-700">No Active Relief Campaigns</h3>
+                        <p class="text-xs text-slate-500 mt-1">Submitted requests will appear here once verified and approved in the database.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = approved.map((req) => `
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition">
+                    <div class="relative h-52 bg-slate-100">
+                        <img src="${req.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80'}" alt="${req.name}" class="h-full w-full object-cover">
+                        <span class="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-circle-check"></i> SVEC Verified
+                        </span>
+                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/80 to-transparent p-3 pt-6 text-white">
+                            <span class="text-xs font-semibold text-blue-200 block">${req.dept}</span>
+                            <h3 class="text-base font-bold">${req.name}</h3>
+                        </div>
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded border border-red-200">${req.category}</span>
+                                <span class="text-xs text-slate-500 font-medium"><i class="fa-solid fa-hospital text-red-500 mr-1"></i>${req.hospital}</span>
+                            </div>
+                            <p class="text-slate-600 text-sm line-clamp-3">${req.description || ''}</p>
+                        </div>
+                        <div class="mt-5 pt-3 border-t border-slate-100">
+                            <div class="flex justify-between text-sm font-semibold mb-1">
+                                <span class="text-slate-700">₹0 raised</span>
+                                <span class="text-slate-500">Goal: ₹${Number(req.amount).toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <button onclick="openDonateModal('${req.name}')" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-mobile-screen"></i> Donate via UPI App
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    // Load Contributor Feed from Database
+    async function renderContributorFeed() {
+        const container = document.getElementById('contributorFeedContainer');
+        try {
+            const res = await fetch(`${API_BASE}/api/contributors`);
+            const json = await res.json();
+            const contributors = json.data || [];
+
+            if (contributors.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
+                        <i class="fa-solid fa-heart-circle-plus text-3xl text-slate-300 mb-2 block"></i>
+                        <p class="text-sm font-semibold text-slate-700">No contributions logged yet</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = contributors.map((item, index) => `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-blue-300 transition ${index === 0 ? 'new-feed-entry ring-2 ring-emerald-400/50' : ''}">
+                    <div>
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900 truncate">${item.name}</h4>
+                                <span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium">${item.dept || 'Vasavian'}</span>
+                            </div>
+                            <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded flex-shrink-0">
+                                +₹${Number(item.amount).toLocaleString('en-IN')}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2 truncate">For: <span class="font-semibold text-slate-700">${item.student}</span></p>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] text-slate-400 mt-3 pt-2 border-t border-slate-100">
+                        <span class="inline-flex items-center gap-1 font-medium text-slate-600">
+                            <i class="fa-solid fa-mobile-screen text-blue-600"></i> ${item.app}
+                        </span>
+                        <span>${new Date(item.created_at).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    // Submit Emergency Form to Database
+    document.getElementById('emergencyRequestForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        const origText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving to Database...`;
+
+        try {
+            const formData = new FormData(this);
+            if (currentUploadedPhotoBase64) {
+                formData.append('photo_base64', currentUploadedPhotoBase64);
+            }
+
+            const response = await fetch(`${API_BASE}/api/requests`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                alert("Your emergency relief request has been recorded into the database for verification!");
+                this.reset();
+                document.getElementById('studentPhotoPreview').classList.add('hidden');
+                document.getElementById('previewPlaceholder').classList.remove('hidden');
+                currentUploadedPhotoBase64 = '';
+                showView('homeView');
+                loadStats();
+                renderActiveCampaigns();
+            } else {
+                alert("Error: " + data.error);
+            }
+        } catch (err) {
+            alert("Database submission error. Make sure the backend server is running.");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origText;
+        }
+    });
+
+    // Submit Contributor to Database
+    async function handlePostDonationSubmit(e) {
+        e.preventDefault();
+        const isAnon = document.getElementById('feedAnonymousCheckbox').checked;
+        const inputName = document.getElementById('feedDonorName').value.trim();
+        const dept = document.getElementById('feedDonorDept').value;
+        const year = document.getElementById('feedDonorYear').value;
+        const amount = Number(document.getElementById('customAmount').value) || 500;
+
+        const finalName = isAnon || !inputName ? 'Anonymous Vasavian' : inputName;
+        const finalDept = `${dept} (${year})`;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/contributors`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: finalName,
+                    dept: finalDept,
+                    student: currentStudent || 'Vasavi Emergency Relief',
+                    amount: amount,
+                    app: currentDonationApp || 'UPI',
+                    is_anonymous: isAnon
+                })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                toggleModal('postDonationPromptModal');
+                showView('homeView');
+                loadStats();
+                renderContributorFeed();
+                alert(`Thank you, ${finalName}! Your donation has been saved to the database.`);
+            }
+        } catch (err) {
+            alert("Failed to save contribution to database.");
+        }
+    }
+
+    // Admin Login
+    async function handleAdminLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('adminUsername').value.trim();
+        const password = document.getElementById('adminPassword').value.trim();
+
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                adminToken = data.token;
+                localStorage.setItem('svec_admin_jwt', adminToken);
+                toggleModal('adminLoginModal');
+                renderAdminTable();
+                showView('adminView');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        } catch {
+            alert("Backend connection error.");
+        }
+    }
+
+    // Render Admin Requests from Database
+    async function renderAdminTable() {
+        const tbody = document.getElementById('requestTableBody');
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/requests`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const json = await res.json();
+            const requests = json.data || [];
+            document.getElementById('requestsCountBadge').innerText = `${requests.length} Total Database Records`;
+
+            tbody.innerHTML = requests.map(req => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${req.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80'}" class="w-12 h-12 rounded-lg object-cover border border-slate-300">
+                            <div>
+                                <div class="font-bold text-slate-900">${req.name}</div>
+                                <div class="text-xs text-slate-500">${req.roll} • ${req.dept}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-slate-900 font-medium">${req.hospital}</div>
+                        <span class="inline-block bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded mt-1">${req.category}</span>
+                    </td>
+                    <td class="px-6 py-4 font-bold text-blue-900">₹${Number(req.amount).toLocaleString('en-IN')}</td>
+                    <td class="px-6 py-4 text-xs font-mono text-slate-600">${req.phone}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2.5 py-1 text-xs font-bold rounded-full ${
+                            req.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' : 
+                            req.status === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
+                        }">
+                            ${req.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex justify-center items-center gap-2">
+                            ${req.status === 'Approved' ? `
+                                <button onclick="updateStatus(${req.id}, 'Rejected')" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-md font-semibold transition">
+                                    <i class="fa-solid fa-ban"></i> Revoke
+                                </button>
+                            ` : `
+                                <button onclick="updateStatus(${req.id}, 'Approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-md font-semibold transition">
+                                    <i class="fa-solid fa-check"></i> Approve
+                                </button>
+                            `}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    // Update Status in Database
+    async function updateStatus(id, newStatus) {
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/requests/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+            const data = await res.json();
+            if (data.success) {
+                renderAdminTable();
+                renderActiveCampaigns();
+                loadStats();
+            }
+        } catch (e) { alert("Failed to update database status."); }
+    }
+
+    function previewStudentPhoto(input) {
+        const preview = document.getElementById('studentPhotoPreview');
+        const placeholder = document.getElementById('previewPlaceholder');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentUploadedPhotoBase64 = e.target.result;
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function toggleMenu() { document.getElementById('adminDropdown').classList.toggle('hidden'); }
+    function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+    function showView(viewId) {
+        ['homeView', 'requestView', 'adminView'].forEach(id => document.getElementById(id).classList.add('hidden'));
+        document.getElementById(viewId).classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function openAdminLoginModal() {
+        document.getElementById('adminDropdown').classList.add('hidden');
+        document.getElementById('loginError').classList.add('hidden');
+        toggleModal('adminLoginModal');
+    }
+    function logoutAdmin() {
+        adminToken = '';
+        localStorage.removeItem('svec_admin_jwt');
+        showView('homeView');
+    }
+    function openDonateModal(name) {
+        currentStudent = name;
+        document.getElementById('donateStudentName').innerText = name;
+        updateQrCode();
+        toggleModal('donateModal');
+    }
+    function setAmount(val) {
+        document.getElementById('customAmount').value = val;
+        updateQrCode();
+    }
+    function updateQrCode() {
+        const amount = document.getElementById('customAmount').value || '100';
+        const note = encodeURIComponent(`SVEC Relief Fund for ${currentStudent}`);
+        const upiUrl = `upi://pay?pa=${targetUPI}&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR&tn=${note}`;
+        document.getElementById('upiQrCode').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUrl)}`;
+    }
+    document.getElementById('customAmount').addEventListener('input', updateQrCode);
+    function payAndPrompt(provider) {
+        currentDonationApp = provider === 'gpay' ? 'GPay' : provider === 'phonepe' ? 'PhonePe' : provider === 'paytm' ? 'Paytm' : 'UPI';
+        setTimeout(() => promptContributorFeedDetails(currentDonationApp), 800);
+    }
+    function promptContributorFeedDetails(appName) {
+        const amount = Number(document.getElementById('customAmount').value) || 500;
+        document.getElementById('donateModal').classList.add('hidden');
+        document.getElementById('promptBeneficiaryDisplay').innerText = currentStudent || 'Vasavi Student Relief';
+        document.getElementById('promptAmountDisplay').innerText = amount.toLocaleString('en-IN');
+        toggleModal('postDonationPromptModal');
+    }
+    function openManualContributorModal() {
+        currentStudent = 'General Student Relief';
+        promptContributorFeedDetails('UPI');
+    }
+    function toggleAnonymousField(checkbox) {
+        const nameInput = document.getElementById('feedDonorName');
+        nameInput.value = checkbox.checked ? 'Anonymous Vasavian' : '';
+        nameInput.disabled = checkbox.checked;
+    }
+    function skipContributorFeed() {
+        toggleModal('postDonationPromptModal');
+        showView('homeView');
+    }
+
+    // Initial Load from SQLite Database
+    loadStats();
+    renderActiveCampaigns();
+    renderContributorFeed();
+</script>
